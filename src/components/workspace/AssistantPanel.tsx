@@ -27,7 +27,7 @@ const ACTIONS = [
 
 function lastCodeBlock(md: string) {
   const m = [...md.matchAll(/```[\w-]*\n([\s\S]*?)```/g)];
-  return m.length ? m[m.length - 1][1] : null;
+  return m.length ? (m[m.length - 1]?.[1] ?? null) : null;
 }
 
 export function AssistantPanel({
@@ -117,7 +117,7 @@ export function AssistantPanel({
 
   async function clear() {
     const { error } = await supabase.from("chat_messages").delete().eq("project_id", projectId);
-    if (error) return toast.error("Couldn't clear conversation");
+    if (error) { toast.error("Couldn't clear conversation"); return; }
     setMessages([]);
     toast.success("Conversation cleared");
   }

@@ -43,7 +43,7 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 8) return toast.error("Password must be at least 8 characters.");
+    if (password.length < 8) { toast.error("Password must be at least 8 characters."); return; }
     setLoading(true);
     try {
       if (mode === "signup") {

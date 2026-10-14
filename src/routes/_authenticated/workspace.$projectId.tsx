@@ -117,10 +117,10 @@ function Workspace() {
     const fid = id ?? active;
     if (!fid || !dirty(fid)) return;
     setSaving(true);
-    const content = drafts[fid];
+    const content = drafts[fid] ?? "";
     const { data, error } = await supabase.from("files").update({ content }).eq("id", fid).select("updated_at").single();
     setSaving(false);
-    if (error) return toast.error("Save failed: " + error.message);
+    if (error) { toast.error("Save failed: " + error.message); return; }
     setFiles((fs) => fs.map((f) => (f.id === fid ? { ...f, content, updated_at: data.updated_at } : f)));
     setDrafts((d) => { const n = { ...d }; delete n[fid]; return n; });
     toast.success("Saved");
@@ -171,23 +171,23 @@ function Workspace() {
       const parent = t.path.includes("/") ? t.path.slice(0, t.path.lastIndexOf("/") + 1) : "";
       const np = parent + v;
       const err = validatePath(np);
-      if (err) return toast.error(err);
+      if (err) { toast.error(err); return; }
       const { error } = await supabase.from("files").update({ path: np }).eq("id", t.id);
-      if (error) return toast.error(error.code === "23505" ? "A file with that name exists." : error.message);
+      if (error) { toast.error(error.code === "23505" ? "A file with that name exists." : error.message); return; }
       setFiles((fs) => fs.map((f) => (f.id === t.id ? { ...f, path: np } : f)));
       setNameDialog(null);
       return;
     }
     const path = base + v;
     const err = validatePath(path);
-    if (err) return toast.error(err);
+    if (err) { toast.error(err); return; }
     const user_id = await currentUserId();
     const { data, error } = await supabase
       .from("files")
       .insert({ project_id: projectId, user_id, path, is_folder: nameDialog.mode === "folder", content: "" })
       .select("id,project_id,path,is_folder,content,updated_at")
       .single();
-    if (error) return toast.error(error.code === "23505" ? "That name already exists." : error.message);
+    if (error) { toast.error(error.code === "23505" ? "That name already exists." : error.message); return; }
     setFiles((fs) => [...fs, data as FileRow]);
     setNameDialog(null);
     if (!data.is_folder) openFile(data as FileRow);
@@ -196,7 +196,7 @@ function Workspace() {
   async function deleteRow(f: FileRow) {
     const ids = files.filter((x) => x.id === f.id || (f.is_folder && x.path.startsWith(f.path + "/"))).map((x) => x.id);
     const { error } = await supabase.from("files").delete().in("id", ids);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setFiles((fs) => fs.filter((x) => !ids.includes(x.id)));
     setOpenTabs((t) => t.filter((x) => !ids.includes(x)));
     if (active && ids.includes(active)) setActive(null);
@@ -229,10 +229,10 @@ function Workspace() {
 
   function insertCode(code: string, replace: boolean) {
     const ed = editorRef.current;
-    if (!ed || !activeFile) return toast.error("Open a file first.");
+    if (!ed || !activeFile) { toast.error("Open a file first."); return; }
     const sel = ed.getSelection();
     if (!sel) return;
-    if (replace && sel.isEmpty()) return toast.error("Select code in the editor first.");
+    if (replace && sel.isEmpty()) { toast.error("Select code in the editor first."); return; }
     ed.executeEdits("pilot", [{ range: sel, text: code, forceMoveMarkers: true }]);
     ed.focus();
     toast.success(replace ? "Selection replaced" : "Code inserted");
