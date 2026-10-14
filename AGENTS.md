@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+# AGENTS.md
+
+- Project/file CRUD goes through the browser data client under RLS; every table row carries user_id. Why: ownership enforced by the database.
+- AI chat streams from the server route `src/routes/api/chat.ts` (bearer-verified, persists both messages). Why: keeps the AI key server-side and history consistent.
+- Code execution runs JavaScript only, inside a terminated-on-timeout Web Worker (`src/lib/runner.ts`); other languages report unsupported. Why: never fake execution results.
+- Signed-in pages live under `src/routes/_authenticated/` (client-only gate). Why: session lives in browser storage.
