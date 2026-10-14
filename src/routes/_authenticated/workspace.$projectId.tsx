@@ -22,9 +22,9 @@ import { runCode, buildWebPreview, WEB, type RunResult } from "@/lib/runner";
 export const Route = createFileRoute("/_authenticated/workspace/$projectId")({
   head: () => ({
     meta: [
-      { title: "Workspace — CodePilot AI" },
-      { name: "description", content: "Edit code with the CodePilot AI assistant." },
-      { property: "og:title", content: "Workspace — CodePilot AI" },
+      { title: "Workspace — CodeJunior" },
+      { name: "description", content: "Edit code with the CodeJunior assistant." },
+      { property: "og:title", content: "Workspace — CodeJunior" },
       { property: "og:description", content: "Code editor with AI assistant." },
     ],
   }),

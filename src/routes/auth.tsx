@@ -12,9 +12,9 @@ import { Logo } from "@/components/Logo";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — CodePilot AI" },
-      { name: "description", content: "Sign in or create your CodePilot AI account." },
-      { property: "og:title", content: "Sign in — CodePilot AI" },
+      { title: "Sign in — CodeJunior" },
+      { name: "description", content: "Sign in or create your CodeJunior account." },
+      { property: "og:title", content: "Sign in — CodeJunior" },
       { property: "og:description", content: "Access your coding projects and AI assistant." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
