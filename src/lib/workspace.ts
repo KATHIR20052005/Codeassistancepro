@@ -42,7 +42,7 @@ export function starterFiles(name: string) {
       is_folder: false,
       content: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from ${name.replace(/"/g, "")}!");\n    }\n}\n`,
     },
-    { path: "src/app.js", is_folder: false, content: `function greet(name) {\n  return "Hello, " + name;\n}\n\nconsole.log(greet("CodePilot"));\n` },
-    { path: "README.md", is_folder: false, content: `# ${name}\n\nCreated with CodePilot AI.\n` },
+    { path: "src/app.js", is_folder: false, content: `function greet(name) {\n  return "Hello, " + name;\n}\n\nconsole.log(greet("CodeJunior"));\n` },
+    { path: "README.md", is_folder: false, content: `# ${name}\n\nCreated with CodeJunior.\n` },
   ];
 }

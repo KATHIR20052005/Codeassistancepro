@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-const SYSTEM = `You are CodePilot AI, an expert coding assistant inside a browser IDE.
+const SYSTEM = `You are CodeJunior, an expert coding assistant inside a browser IDE.
 - Answer in concise Markdown. Put code in fenced blocks with a language tag.
 - When fixing or generating code, give one complete code block the user can insert.
 - For debugging: probable cause, explanation, corrected code, reason for the fix, suggested test cases.
