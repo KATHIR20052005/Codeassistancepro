@@ -62,7 +62,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CodePilot AI — Intelligent Coding Workspace" },
+      { title: "CodeJunior — Intelligent Coding Workspace" },
       { name: "description", content: "An AI-powered coding workspace with editor, projects and assistant." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -17,9 +17,9 @@ import { currentUserId, starterFiles } from "@/lib/workspace";
 export const Route = createFileRoute("/_authenticated/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — CodePilot AI" },
-      { name: "description", content: "Your CodePilot AI coding projects." },
-      { property: "og:title", content: "Projects — CodePilot AI" },
+      { title: "Projects — CodeJunior" },
+      { name: "description", content: "Your CodeJunior coding projects." },
+      { property: "og:title", content: "Projects — CodeJunior" },
       { property: "og:description", content: "Manage your coding projects." },
     ],
   }),

@@ -8,7 +8,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       </div>
       {!compact && (
         <span className="font-semibold tracking-tight">
-          CodePilot <span className="text-primary">AI</span>
+          Code<span className="text-primary">Junior</span>
         </span>
       )}
     </div>

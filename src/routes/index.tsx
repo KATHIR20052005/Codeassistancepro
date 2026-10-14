@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CodePilot AI — Intelligent Coding Workspace" },
+      { title: "CodeJunior — Intelligent Coding Workspace" },
       { name: "description", content: "Write, explain, debug and refactor code with a real AI assistant inside a browser IDE." },
-      { property: "og:title", content: "CodePilot AI — Intelligent Coding Workspace" },
+      { property: "og:title", content: "CodeJunior — Intelligent Coding Workspace" },
       { property: "og:description", content: "A browser IDE with projects, a Monaco editor and an AI coding assistant." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
