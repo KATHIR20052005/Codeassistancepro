@@ -11,7 +11,7 @@ export type FileRow = {
 
 export const LANGS: Record<string, string> = {
   java: "java", js: "javascript", jsx: "javascript", ts: "typescript", tsx: "typescript",
-  html: "html", css: "css", json: "json", xml: "xml", sql: "sql", md: "markdown", py: "python",
+  html: "html", css: "css", json: "json", xml: "xml", sql: "sql", md: "markdown", py: "python", c: "c", h: "c", cpp: "cpp", cc: "cpp", hpp: "cpp",
 };
 
 export function langFor(path: string) {

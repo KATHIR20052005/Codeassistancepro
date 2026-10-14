@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AssistantPanel } from "@/components/workspace/AssistantPanel";
 import { currentUserId, langFor, validatePath, type FileRow } from "@/lib/workspace";
-import { runCode, type RunResult } from "@/lib/runner";
+import { runCode, buildWebPreview, WEB, type RunResult } from "@/lib/runner";
 
 export const Route = createFileRoute("/_authenticated/workspace/$projectId")({
   head: () => ({
@@ -74,6 +74,9 @@ function Workspace() {
   const [dark, setDark] = useState(true);
   const [query, setQuery] = useState("");
   const [output, setOutput] = useState<RunResult | null>(null);
+  const [stdin, setStdin] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [bottomTab, setBottomTab] = useState<"output" | "input" | "preview">("output");
   const [running, setRunning] = useState(false);
   const [showBottom, setShowBottom] = useState(true);
   const [mobileTab, setMobileTab] = useState<"files" | "editor" | "ai">("editor");
@@ -205,9 +208,26 @@ function Workspace() {
 
   async function run() {
     if (!activeFile) return;
-    setRunning(true);
     setShowBottom(true);
-    const r = await runCode(langFor(activeFile.path), activeContent);
+    const lang = langFor(activeFile.path);
+    if (WEB.includes(lang)) {
+      const contentOf = (p: string) => {
+        const f = files.find((x) => !x.is_folder && (x.path === p || x.path.endsWith("/" + p)));
+        return f ? (drafts[f.id] ?? f.content) : undefined;
+      };
+      const htmlFile = lang === "html" ? activeFile : files.find((x) => !x.is_folder && x.path.endsWith(".html"));
+      if (!htmlFile) {
+        setOutput({ stdout: "", stderr: "Create an .html file that links this stylesheet to preview it.", exitCode: -1, durationMs: 0 });
+        setBottomTab("output");
+        return;
+      }
+      setPreview(buildWebPreview(drafts[htmlFile.id] ?? htmlFile.content, contentOf));
+      setBottomTab("preview");
+      return;
+    }
+    setRunning(true);
+    setBottomTab("output");
+    const r = await runCode(lang, activeContent, stdin);
     setOutput(r);
     setRunning(false);
   }
@@ -369,26 +389,38 @@ function Workspace() {
         )}
       </div>
       {showBottom && (
-        <div className="h-40 shrink-0 border-t bg-activity">
-          <div className="flex items-center justify-between border-b px-3 py-1 text-xs uppercase tracking-wider text-muted-foreground">
-            <span className="flex items-center gap-1"><Terminal className="h-3.5 w-3.5" /> Output</span>
-            <button aria-label="Hide output" onClick={() => setShowBottom(false)}><X className="h-3.5 w-3.5" /></button>
+        <div className={`${preview !== null ? "h-72" : "h-48"} flex shrink-0 flex-col border-t bg-activity`}>
+          <div className="flex items-center gap-3 border-b px-3 py-1 text-xs uppercase tracking-wider text-muted-foreground">
+            <button className={`flex items-center gap-1 ${bottomTab === "output" ? "text-foreground" : ""}`} onClick={() => setBottomTab("output")}><Terminal className="h-3.5 w-3.5" /> Output</button>
+            <button className={bottomTab === "input" ? "text-foreground" : ""} onClick={() => setBottomTab("input")}>Input (stdin)</button>
+            {preview !== null && <button className={bottomTab === "preview" ? "text-foreground" : ""} onClick={() => setBottomTab("preview")}>Preview</button>}
+            <button aria-label="Hide output" className="ml-auto" onClick={() => setShowBottom(false)}><X className="h-3.5 w-3.5" /></button>
           </div>
-          <div className="h-[calc(100%-26px)] overflow-auto p-3 font-mono text-xs">
-            {running && <span className="text-muted-foreground">Running…</span>}
-            {!running && !output && <span className="text-muted-foreground">Press Run to execute JavaScript files in a sandboxed runner.</span>}
-            {!running && output && (
-              <>
-                {output.stdout && <pre className="whitespace-pre-wrap">{output.stdout}</pre>}
-                {output.stderr && <pre className="whitespace-pre-wrap text-destructive">{output.stderr}</pre>}
-                {output.supported && (
-                  <p className={`mt-2 ${output.exitCode === 0 ? "text-success" : "text-destructive"}`}>
-                    exit {output.exitCode} · {output.durationMs}ms
-                  </p>
-                )}
-              </>
-            )}
-          </div>
+          {bottomTab === "input" && (
+            <textarea value={stdin} onChange={(e) => setStdin(e.target.value)} placeholder="Type input your program reads (e.g. for Scanner / scanf / cin), one value per line…"
+              className="min-h-0 flex-1 resize-none bg-transparent p-3 font-mono text-xs outline-none" />
+          )}
+          {bottomTab === "preview" && preview !== null && (
+            <iframe title="Web preview" sandbox="allow-scripts allow-modals" srcDoc={preview} className="min-h-0 flex-1 bg-card" />
+          )}
+          {bottomTab === "output" && (
+            <div className="min-h-0 flex-1 overflow-auto p-3 font-mono text-xs">
+              {running && <span className="text-muted-foreground">Compiling and running…</span>}
+              {!running && !output && <span className="text-muted-foreground">Press Run. Java, C, C++, Python, JavaScript, TypeScript and SQL compile on a remote sandbox; HTML/CSS open in Preview.</span>}
+              {!running && output && (
+                <>
+                  {output.stdout && <pre className="whitespace-pre-wrap">{output.stdout}</pre>}
+                  {output.stderr && <pre className="whitespace-pre-wrap text-destructive">{output.stderr}</pre>}
+                  {!output.stdout && !output.stderr && output.exitCode === 0 && <span className="text-muted-foreground">(no output)</span>}
+                  {output.exitCode !== -1 && (
+                    <p className={`mt-2 ${output.exitCode === 0 ? "text-success" : "text-destructive"}`}>
+                      {output.status ?? `exit ${output.exitCode}`} · {output.durationMs}ms
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
